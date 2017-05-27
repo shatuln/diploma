@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1495622050 source:/home/leoind/wallsdetectingvideo/main.cpp
+	"opencv2/highgui/highgui.hpp"
+	"opencv2/imgproc/imgproc.hpp"
+	"opencv2/photo/photo.hpp"
+	"opencv2/opencv.hpp"
+	"opencv2/videoio.hpp"
+	<iostream>
+	<sstream>
+	<vector>
+
