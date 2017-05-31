@@ -39,20 +39,26 @@ int main(int argc, char** argv)
         cout << "could not open output video" << endl;
         return -1;
     }
-    for (;;) {        //==================start for frames loop==================================
- Mat cropres ,hlres, res, src1, dst, cdst, cdst1;
+ //   for (;;) {        //==================start for frames loop==================================
+ Mat cropres ,hlres, res, src1, dst, cdst, cdst1, temp;
  //resize(src, src1, Size(), 0.5, 0.5, INTER_NEAREST);
-//for (int i = 0; i < 17; i++) {
+for (int i = 0; i < 37; i++) {
   cap >> src;
-  if(src.empty()){
-      break;}
+//  if(src.empty()){
+//      break;}
     cout << "\r" << num << "/" << cap.get(CAP_PROP_FRAME_COUNT) << flush;
  src.convertTo(src1, -1, 0.9, 0);
+ //imshow("src", src);
+ cvtColor(src, temp, COLOR_RGB2GRAY);
+ //imshow("bw", temp);
+ blur(temp, res, Size(3,3), Point(-1,-1));
+ //imshow("blur", res);
  blur(src1, res, Size(3,3), Point(-1,-1));
  //threshold(src1, res, 160, 255, THRESH_BINARY);
  //inpaint(src1, res, hlrehlreshlress, 3, INPAINT_TELEA);
 
  Canny(res, dst, 20, 50, 3);
+ //imshow("canny", dst);
  //dst = cropres(Rect(0, cropres.rows/2, cropres.cols, cropres.rows/2));
  cvtColor(dst, cdst, CV_GRAY2BGR);
  cvtColor(dst, cdst1, CV_GRAY2BGR);
@@ -68,6 +74,7 @@ int main(int argc, char** argv)
   for( size_t i = 0; i < lines.size(); i++ )
   {
     Vec4i l = lines[i];
+    line( cdst1, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255,0,255), 3, CV_AA);
     //cout << i << ": " << l << ", angle = ";
     double angle = atan2(l[3]-l[1], l[2]-l[0]) * 180.0 / CV_PI;
     //cout << angle << endl;
@@ -93,7 +100,7 @@ int main(int argc, char** argv)
             rightmid = l;
             mid = l[3] - dst.size().height/2;
         }
-        line( cdst1, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255,0,255), 3, CV_AA);
+        line( cdst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255,0,255), 3, CV_AA);
         line( res, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255,0,255), 3, CV_AA);
     }
     if (rightmid[0]) {
@@ -106,7 +113,7 @@ int main(int argc, char** argv)
             leftmid = l;
             mid = l[1] - dst.size().height/2;
         }
-        line( cdst1, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255,0,255), 3, CV_AA);
+        line( cdst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255,0,255), 3, CV_AA);
         line( res, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255,0,255), 3, CV_AA);
     }
     if (leftmid[0]) {
@@ -137,7 +144,8 @@ int main(int argc, char** argv)
     outputVideo << res;
     num++;
     imshow("source", res);
-    //imshow("detected lines", cdst);
+    //imshow("hough", cdst1);
+    //imshow("filter hough", cdst);
     //imshow("detected lines 1", cdst1);
 }   //======================================end of frames loop======================================================
 
