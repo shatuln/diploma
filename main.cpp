@@ -44,12 +44,7 @@ int main(int argc, char** argv)
     }
     Mat src;
     int num = 1;
-    const string NAME = "opencv/output.mov";   // Form the new name with container
-    int ex = static_cast<int>(cap.get(CV_CAP_PROP_FOURCC));     // Get Codec Type- Int form
-
-    // Transform from int to char via Bitwise operators
-    //char EXT[] = {(char)(ex & 0XFF) , (char)((ex & 0XFF00) >> 8),(char)((ex & 0XFF0000) >> 16),(char)((ex & 0XFF000000) >> 24), 0};
-
+    const string NAME = "opencv/output.mov";
     Size S = Size((int) cap.get(CV_CAP_PROP_FRAME_WIDTH), (int) cap.get(CV_CAP_PROP_FRAME_HEIGHT)); // Acquire input size
     cout << "Processing..." << endl;
     VideoWriter outputVideo;
@@ -59,9 +54,8 @@ int main(int argc, char** argv)
         cout << "Can't open output video" << endl;
         return -1;
     }
- //   for (;;) {        //==================start for frames loop==================================
+ //==================start for frames loop==================================
  Mat cropres ,hlres, res, src1, dst, cdst, cdst1, temp;
- //resize(src, src1, Size(), 0.5, 0.5, INTER_NEAREST);
 for (int i = 0; i < frames; i++) {
   cap >> src;
   if(src.empty()){
@@ -70,12 +64,8 @@ for (int i = 0; i < frames; i++) {
  src.convertTo(src1, -1, 0.9, 0);
  cvtColor(src, temp, COLOR_RGB2GRAY);
  blur(temp, res, Size(3,3), Point(-1,-1));
- //blur(src1, res, Size(3,3), Point(-1,-1));
- //threshold(src1, res, 160, 255, THRESH_BINARY);
- //inpaint(src1, res, hlrehlreshlress, 3, INPAINT_TELEA);
 
  Canny(res, dst, 20, 50, 3);
- //dst = cropres(Rect(0, cropres.rows/2, cropres.cols, cropres.rows/2));
  cvtColor(dst, cdst, CV_GRAY2BGR);
  cvtColor(dst, cdst1, CV_GRAY2BGR);
 
@@ -91,17 +81,13 @@ for (int i = 0; i < frames; i++) {
   {
     Vec4i l = lines[i];
     line( cdst1, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255,0,255), 3, CV_AA);
-    //cout << i << ": " << l << ", angle = ";
     double angle = atan2(l[3]-l[1], l[2]-l[0]) * 180.0 / CV_PI;
-    //cout << angle << endl;
     if ((angle < -5 && angle > -45 && l[0] < 15)) {
         left.push_back(l);
-        //cout << "right" << endl;
         itr++;
     }
     if (angle > 5 && angle < 45 && l[2] > (dst.size().width - 15)) {
         right.push_back(l);
-        //cout << "left" << endl;
         itl++;
     }
   }
@@ -142,7 +128,6 @@ for (int i = 0; i < frames; i++) {
     if (anglearrow < 0)
         anglearrow += 360;
     anglearrow = anglearrow * (CV_PI / 180);
-    //cout << "\n angle: " << anglearrow << endl;
     arrow[0] = res.size().width / 2;
     arrow[3] = res.size().height - 50;
     arrow[2] = res.size().width / 2;
@@ -159,20 +144,19 @@ for (int i = 0; i < frames; i++) {
     arrowedLine(src1, Point(arrow[2],arrow[3]), Point(arrow[0],arrow[1]), Scalar(0,0,0), 3, CV_AA);
     outputVideo << src1;
     num++;
-    //imshow("detected lines 1", cdst1);
 }   //======================================end of frames loop======================================================
 
 cap.release();
 outputVideo.release();
 cout << "\nDone!" << endl;
-if (showimgs == true) {
+if (showimgs) {
         imshow("1:src", src);
         waitKey(0);
         imshow("2:bw", temp);
         waitKey(0);
-        imshow("3:blur", res);
+        imshow("blur", res);
         waitKey(0);
-        imshow("4:canny", dst);
+        imshow("4:sobel", dst);
         waitKey(0);
         imshow("5:hough", cdst1);
         waitKey(0);
